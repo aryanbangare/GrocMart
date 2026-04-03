@@ -1,0 +1,6 @@
+@GrocMart.web_HostAddress = http://localhost:5076
+
+GET {{GrocMart.web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

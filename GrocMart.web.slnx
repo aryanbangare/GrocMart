@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="GrocMart.Core/GrocMart.Core.csproj" />
+  <Project Path="GrocMart.Persistence/GrocMart.Persistence.csproj" Id="0841a98d-af9c-44d9-93a6-0aff232934bf" />
+  <Project Path="GrocMart.Services/GrocMart.Services.csproj" />
+  <Project Path="GrocMart.web/GrocMart.web.csproj" />
+</Solution>
