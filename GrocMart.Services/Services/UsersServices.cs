@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using GrocMart.Persistence.Data;
 
 namespace GrocMart.Services.Services
 {
@@ -72,7 +73,7 @@ namespace GrocMart.Services.Services
         {
             try
             {
-                var user = _Dbcontext.Users.FirstOrDefault(u => u.Id == request.Id && u.PasswordHash == request.PasswordHash);
+                var user = _Dbcontext.Users.FirstOrDefault(u => u.Name == request.Name && u.PasswordHash == request.PasswordHash);
 
                 if (user != null)
                 {
@@ -83,9 +84,19 @@ namespace GrocMart.Services.Services
             {
                 Console.WriteLine($"An error occurred while logging in: {ex.Message}");
             }
-            //finally { Console.WriteLine("succesfull"); }
+            
 
             return null;
+        }
+        public void DeleteUsers(int id)
+        {
+            Users? user = _Dbcontext.Users.Find(id);
+            if (user is null)
+            {
+                throw new InvalidOperationException($"User with Id {id} not found.");
+            }
+            _Dbcontext.Users.Remove(user);
+            _Dbcontext.SaveChanges();
         }
     }
 }

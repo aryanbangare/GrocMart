@@ -21,6 +21,7 @@ namespace GrocMart.web.Endpoints
             userGroup.MapPost("", CreateUsersRequest);
             userGroup.MapPost("register", Register);
             userGroup.MapPost("login", Login);
+            userGroup.MapDelete("/{Id}", DeleteUsers);
             return endpoint;
         }
         private static Ok<IEnumerable<UsersDto>> GetUsers(UsersServices UsersService)
@@ -49,6 +50,18 @@ namespace GrocMart.web.Endpoints
             return result is not null
                 ? TypedResults.Ok(result)
                 : TypedResults.BadRequest("Failed to login user");
+        }
+        public static IResult DeleteUsers(int Id, UsersServices UsersService)
+        {
+            try
+            {
+                UsersService.DeleteUsers(Id);
+                return TypedResults.Ok($"User with Id {Id} deleted successfully.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return TypedResults.NotFound(ex.Message);
+            }
         }
     }
 }

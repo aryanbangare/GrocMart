@@ -1,4 +1,4 @@
-﻿using GrocMart.Core.Dtos;
+using GrocMart.Core.Dtos;
 using GrocMart.Services.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -12,8 +12,12 @@ namespace GrocMart.web.Endpoints
             var ordersGroup = endpoint.MapGroup("Orders");
             ordersGroup.MapGet("", GetOrders);
             ordersGroup.MapGet("/{userId}", GetOrdersByUserID);
+          
             return endpoint;    
         }
+        
+        
+        
         public static Ok<IEnumerable<OrdersDto>> GetOrders(OrdersServices OrdersService)
         {
             IEnumerable<OrdersDto> Orders = OrdersService.GetOrderslist();
@@ -24,5 +28,5 @@ namespace GrocMart.web.Endpoints
             IEnumerable<OrdersDto> Orders = OrdersService.GetOrdersByUserID(userId);
             return TypedResults.Ok(Orders);
         }
-    }
+            }
 }

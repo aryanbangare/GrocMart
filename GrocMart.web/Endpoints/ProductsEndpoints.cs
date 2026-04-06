@@ -1,4 +1,5 @@
-﻿using GrocMart.Core.Dtos;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using GrocMart.Core.Dtos;
 using GrocMart.Core.Requests;
 using GrocMart.Services.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,6 +22,8 @@ namespace GrocMart.web.Endpoints
             ProductGroup.MapPost("", CreateProductRequest);
             ProductGroup.MapGet("/{Id}", GetProductsById);
             ProductGroup.MapDelete("/{Id}", DeleteProducts);
+          
+
             return endpoint;
         }
         private static Ok<IEnumerable<ProductsDto>> GetProducts(ProductsServices ProductsService)
@@ -51,6 +54,9 @@ namespace GrocMart.web.Endpoints
             {
                 return TypedResults.NotFound(ex.Message);
             }
+            
         }
+        
+        
     }
 }

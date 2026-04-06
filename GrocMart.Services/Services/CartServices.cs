@@ -1,4 +1,4 @@
-﻿using GrocMart.Core.Dtos;
+using GrocMart.Core.Dtos;
 using GrocMart.Core.Requests;
 using GrocMart.Persistence;
 using GrocMart.Persistence.Data;
@@ -30,6 +30,15 @@ namespace GrocMart.Services.Services
         {
             try
             {
+                var product = _Dbcontext.Products.FirstOrDefault(p => p.Id == request.ProductID);
+
+                if (product == null || product.AvabilityQuentity < request.Quantity)
+                {
+                    return null;
+                }
+
+                product.AvabilityQuentity -= request.Quantity;
+
                 var cart = new Persistence.Data.Cart
                 {
                     UserID = request.UserID,
