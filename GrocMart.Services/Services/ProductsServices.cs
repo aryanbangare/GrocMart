@@ -18,7 +18,7 @@ namespace GrocMart.Services.Services
         }
         public IEnumerable<ProductsDto> GetProductslist()
         {
-            IReadOnlyList<ProductsDto> products = _Dbcontext.Products.Select(p => new ProductsDto(p.Id, p.Name, p.Brand, p.Price, p.DiscountPrice, p.AvabilityQuentity)).ToList();
+            IReadOnlyList<ProductsDto> products = _Dbcontext.Products.Where(p => p.AvabilityQuentity > 0).Select(p => new ProductsDto(p.Id, p.Name, p.Brand, p.Price, p.DiscountPrice, p.AvabilityQuentity)).ToList();
             return products;
         }
         public IEnumerable<ProductsDto> GetProductsById(int Id)

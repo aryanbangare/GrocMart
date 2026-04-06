@@ -19,6 +19,8 @@ namespace GrocMart.web.Endpoints
 
             userGroup.MapGet("", GetUsers);
             userGroup.MapPost("", CreateUsersRequest);
+            userGroup.MapPost("register", Register);
+            userGroup.MapPost("login", Login);
             return endpoint;
         }
         private static Ok<IEnumerable<UsersDto>> GetUsers(UsersServices UsersService)
@@ -33,6 +35,20 @@ namespace GrocMart.web.Endpoints
             return result is not null
                 ? TypedResults.Ok(result)
                 : TypedResults.BadRequest("Failed to create user");
+        }
+        private static IResult Register(CreateUsersRequest request, UsersServices UsersService)
+        {
+            var result = UsersService.Register(request);
+            return result is not null
+                ? TypedResults.Ok(result)
+                : TypedResults.BadRequest("Failed to register user");
+        }
+        private static IResult Login(LoginRequest request, UsersServices UsersService)
+        {
+            var result = UsersService.Login(request);
+            return result is not null
+                ? TypedResults.Ok(result)
+                : TypedResults.BadRequest("Failed to login user");
         }
     }
 }
