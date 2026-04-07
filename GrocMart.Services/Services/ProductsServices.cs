@@ -62,7 +62,28 @@ namespace GrocMart.Services.Services
             
         }
          
-        
+        public ProductsDto? PatchProductRequest(int Id, PatchProductRequest request)
+        {
+            try
+            {
+                Products? product = _Dbcontext.Products.Find(Id);
+                if (product is null)
+                {
+                    throw new Exception("Product not found");
+                }
+                
+                product.Price = request.Price  ;
+                product.DiscountPrice = request.DiscountPrice ;
+                product.AvabilityQuentity = request.AvabilityQuentity ;
+                _Dbcontext.SaveChanges();
+                return new ProductsDto(product.Id, product.Name, product.Brand, product.Price, product.DiscountPrice, product.AvabilityQuentity);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while updating the product: {ex.Message}");
+            }
+            return null;
+        }
 
     }                                                 
 }

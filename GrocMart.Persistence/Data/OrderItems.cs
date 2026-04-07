@@ -10,6 +10,9 @@ namespace GrocMart.Persistence.Data
         public  int OrderID { get; set; }
         public int ProductID { get; set; }
         public int Quantity { get; set; }
+        public Orders? orders { get; set; }
+        public Products? products { get; set; }
+
 
 
     }

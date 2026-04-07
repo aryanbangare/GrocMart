@@ -9,5 +9,6 @@ namespace GrocMart.Persistence.Data
         public int Id { get; set; }
         public int UserID { get; set; }
         public DateTime OrderDate { get; set; }= DateTime.Now;
+        public IList<OrderItems> OrderItems { get; init; } = [];
     }
 }

@@ -14,6 +14,8 @@ namespace GrocMart.web.Endpoints
             cartGroup.MapGet("", GetCart);
             cartGroup.MapGet("/{userId}", GetCartByUserID);
             cartGroup.MapPost("", CreateCartRequest);
+            cartGroup.MapPatch("/{Id}", PatchCartRequest);
+            cartGroup.MapDelete("/{Id}", DeleteCart);
             return endpoint;
         }
 
@@ -33,6 +35,25 @@ namespace GrocMart.web.Endpoints
             return result is not null
                 ? TypedResults.Ok(result)
                 : TypedResults.BadRequest("Failed to create cart");
+        }
+        public static IResult PatchCartRequest(CartServices CartService,int Id, PatchCartRequest request)
+        {
+            var result = CartService.PatchCartRequest(Id, request);
+            return result is not null
+                ? TypedResults.Ok(result)
+                : TypedResults.BadRequest("Failed to update cart");
+        }
+       public static IResult DeleteCart(int Id, CartServices CartService)
+        {
+            try
+            {
+                CartService.DeleteCart(Id);
+                return TypedResults.Ok($"Cart with Id {Id} deleted successfully.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return TypedResults.NotFound(ex.Message);
+            }
         }
     }
 }
