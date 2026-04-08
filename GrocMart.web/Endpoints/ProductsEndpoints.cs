@@ -22,7 +22,8 @@ namespace GrocMart.web.Endpoints
             ProductGroup.MapPost("", CreateProductRequest);
             ProductGroup.MapGet("/{Id}", GetProductsById);
             ProductGroup.MapDelete("/{Id}", DeleteProducts);
-          
+            ProductGroup.MapPatch("/{Id}", PatchProductRequest);
+
 
             return endpoint;
         }
@@ -54,9 +55,16 @@ namespace GrocMart.web.Endpoints
             {
                 return TypedResults.NotFound(ex.Message);
             }
-            
+
         }
-        
-        
+        public static IResult PatchProductRequest(ProductsServices ProductsService, int Id, PatchProductRequest request)
+        {
+            var result = ProductsService.PatchProductRequest(Id, request);
+            return result is not null
+                ? TypedResults.Ok(result)
+                : TypedResults.BadRequest("Failed to update product");
+
+
+        }
     }
 }
