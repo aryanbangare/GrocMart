@@ -26,47 +26,6 @@ namespace GrocMart.Services.Services
             IReadOnlyList<OrdersDto> orders = _Dbcontext.Orders.Where(o => o.UserID == userId).Select(o => new OrdersDto(o.Id, o.UserID, o.OrderDate)).ToList();
             return orders;
         }
-        public async Task<int> CheckoutAsync(CreateCheckoutRequest request)
-        {
-            if (request.Items == null || !request.Items.Any())
-                throw new Exception("Cart is empty");
-
-           
-            var order = new Orders
-            {
-                UserID = request.UserId,
-                OrderDate = DateTime.Now
-            };
-
-            _Dbcontext.Orders.Add(order);
-            await _Dbcontext.SaveChangesAsync(); 
-
-            foreach (var item in request.Items)
-            {
-                var product = await _Dbcontext.Products.FindAsync(item.ProductId);
-
-                if (product == null)
-                    throw new Exception($"Product {item.ProductId} not found");
-
-               
-                if (product.AvabilityQuentity < item.Quantity)
-                    throw new Exception($"Insufficient stock for product {product.Name}");
-
-                
-                product.AvabilityQuentity -= item.Quantity;
-
-                
-                _Dbcontext.OrderItems.Add(new OrderItems
-                {
-                    OrderID = order.Id,
-                    ProductID = item.ProductId,
-                    Quantity = item.Quantity
-                });
-            }
-
-            await _Dbcontext.SaveChangesAsync();
-
-            return order.Id;
-        }
+       
     }
 }

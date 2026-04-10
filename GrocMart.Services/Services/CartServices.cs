@@ -1,96 +1,108 @@
-using Azure.Core;
 using GrocMart.Core.Dtos;
 using GrocMart.Core.Requests;
 using GrocMart.Persistence;
 using GrocMart.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace GrocMart.Services.Services;
-
-public sealed class CartServices
+namespace GrocMart.Services.Services
 {
-    private readonly AppDbContext _Dbcontext;
-    public CartServices(AppDbContext Dbcontext)
+    public sealed class CartServices
     {
-        _Dbcontext = Dbcontext ?? throw new ArgumentNullException(nameof(Dbcontext));
-    }
-    public IEnumerable<CartDto> GetCartlist()
-    {
-        IReadOnlyList<CartDto> cart = _Dbcontext.Cart.Include(b => b.Products).Select(c => new CartDto(c.Id, c.UserID, c.ProductID, c.Products.Name, c.Products.Price, c.Quantity)).ToList();
-        return cart;
+        private readonly AppDbContext _dbcontext;
 
-    }
-    public IEnumerable<CartDto> GetCartByUserID(int userId)
-    {
-        IReadOnlyList<CartDto> cart = _Dbcontext.Cart.Where(c => c.UserID == userId).Select(c => new CartDto(c.Id, c.UserID, c.ProductID, c.Products.Name, c.Products.Price, c.Quantity)).ToList();
-        return cart;
-    }
-    public CartDto? CreateCartRequest(CreateCartRequest request)
-    {
-        try
+        public CartServices(AppDbContext db)
         {
-            var product = _Dbcontext.Products.FirstOrDefault(p => p.Id == request.ProductID);
+            _dbcontext = db;
+        }
 
-            if (product == null || product.AvabilityQuentity < request.Quantity)
+
+        public IEnumerable<CartDto> GetCartByUserID(int userId)
+        {
+            return _dbcontext.Cart
+                .Where(c => c.UserID == userId)
+                .Include(c => c.Products)
+                .Select(c => new CartDto(
+                    c.Id,
+                    c.UserID,
+                    c.ProductID,
+                    c.Products.Name,
+                    c.Products.Price,
+                    c.Quantity
+                ))
+                .ToList();
+        }
+        public object AddToCart(AddToCartRequest request)
+        {
+            var product = _dbcontext.Products
+                .FirstOrDefault(p => p.Id == request.ProductID);
+
+            if (product == null)
+                return new { success = false, message = "Invalid product id" };
+
+            if (product.AvabilityQuentity < request.Quantity)
+                return new { success = false, message = "Not enough stock" };
+
+            var existing = _dbcontext.Cart
+                .FirstOrDefault(c =>
+                    c.UserID == request.UserID &&
+                    c.ProductID == request.ProductID);
+
+            if (existing != null)
             {
+                existing.Quantity += request.Quantity;
+            }
+            else
+            {
+                _dbcontext.Cart.Add(new Cart
+                {
+                    UserID = request.UserID,
+                    ProductID = request.ProductID,
+                    Quantity = request.Quantity
+                });
+            }
+
+            _dbcontext.SaveChanges();
+
+            return new { success = true };
+        }
+        public CartDto? PatchCartRequest(int id, PatchCartRequest request)
+        {
+            var cart = _dbcontext.Cart
+                .Include(c => c.Products)
+                .FirstOrDefault(c => c.Id == id);
+
+            if (cart == null) return null;
+
+            if (request.Quantity <= 0)
+            {
+                _dbcontext.Cart.Remove(cart);
+                _dbcontext.SaveChanges();
                 return null;
             }
 
-            //product.AvabilityQuentity -= request.Quantity;
+            cart.Quantity = request.Quantity;
+            _dbcontext.SaveChanges();
 
-            var cart = new Persistence.Data.Cart
-            {
-                UserID = request.UserID,
-                ProductID = request.ProductID,
-                Quantity = request.Quantity
-            };
-            _Dbcontext.Cart.Add(cart);
-            _Dbcontext.SaveChanges();
-            return new CartDto(cart.Id, cart.UserID, cart.ProductID, cart.Products.Name, cart.Products.Price, cart.Quantity);
+            return new CartDto(
+                cart.Id,
+                cart.UserID,
+                cart.ProductID,
+                cart.Products.Name,
+                cart.Products.Price,
+                cart.Quantity
+            );
         }
-        catch (Exception ex)
+        public bool DeleteCart(int id)
         {
-            Console.WriteLine($"An error occurred while creating the cart: {ex.Message}");
-        }
-        return null;
-    }
-    public CartDto? PatchCartRequest(int Id, PatchCartRequest request)
-    {
-        {
-            try
-            {
-                Cart? cart = _Dbcontext.Cart
-                    .Include(c => c.Products)
-                    .FirstOrDefault(c => c.Id == Id);
-                if (cart is null)
-                {
-                    throw new Exception("Cart not found");
-                }
-                cart.Quantity = request.Quantity;
-                _Dbcontext.SaveChanges();
-                return new CartDto(cart.Id, cart.UserID, cart.ProductID, cart.Products.Name, cart.Products.Price, cart.Quantity);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while updating the cart: {ex.Message}");
-            }
+            var cart = _dbcontext.Cart.Find(id);
 
-            return null;
+            if (cart == null) return false;
+
+            _dbcontext.Cart.Remove(cart);
+            _dbcontext.SaveChanges();
+
+            return true;
         }
+        
     }
-    public void DeleteCart(int Id)
-    {
-        Cart? cart = _Dbcontext.Cart.Find(Id);
-        if (cart is null)
-        {
-            throw new InvalidOperationException($"Cart with Id {Id} not found.");
-        }
-        _Dbcontext.Cart.Remove(cart);
-        _Dbcontext.SaveChanges();
-    }
-    
 }

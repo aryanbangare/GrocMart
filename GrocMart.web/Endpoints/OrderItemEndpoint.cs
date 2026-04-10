@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using GrocMart.Core.Dtos;
+using GrocMart.Core.Requests;
 using GrocMart.Persistence.Data;
 using GrocMart.Services.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -15,6 +16,8 @@ namespace GrocMart.web.Endpoints
             var orderItemsGroup = endpoint.MapGroup("OrderItems");
             orderItemsGroup.MapGet("", GetOrderItems);
             orderItemsGroup.MapGet("/{orderId}", GetOrderItemsByOrderID);
+            orderItemsGroup.MapPost("/checkout", Checkout);
+
             return endpoint;
         }
         public static Ok<IEnumerable<OrderItemDto>> GetOrderItems(OrderItemServices OrderItemsService)
@@ -27,6 +30,20 @@ namespace GrocMart.web.Endpoints
             IEnumerable<OrderItemDto> OrderItems = OrderItemsService.GetOrderItemsByOrderID(orderId);
             return TypedResults.Ok(OrderItems);
         }
-      
+
+        public static IResult Checkout(CreateCheckoutRequest request, OrderItemServices OrderItemServices)
+        {
+            try
+            {
+                var result = OrderItemServices.CheckoutAsync(request).GetAwaiter().GetResult();
+                return result > 0
+                    ? TypedResults.Ok($"Order with Id {result} created successfully.")
+                    : TypedResults.BadRequest("Failed to create order");
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.BadRequest(ex.Message);
+            }
+        }
     }
 }

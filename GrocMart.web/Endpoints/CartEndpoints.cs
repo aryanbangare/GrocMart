@@ -1,59 +1,48 @@
-﻿using GrocMart.Core.Dtos;
-using GrocMart.Core.Requests;
+﻿using GrocMart.Core.Requests;
 using GrocMart.Services.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace GrocMart.web.Endpoints
 {
     public static class CartEndpoints
     {
-        public static IEndpointRouteBuilder MapCartEndpoints(this IEndpointRouteBuilder endpoint)
+        public static IEndpointRouteBuilder MapCartEndpoints(this IEndpointRouteBuilder app)
         {
-            ArgumentNullException.ThrowIfNull(endpoint);
-            var cartGroup = endpoint.MapGroup("Cart");
-            cartGroup.MapGet("", GetCart);
-            cartGroup.MapGet("/{userId}", GetCartByUserID);
-            cartGroup.MapPost("", CreateCartRequest);
-            cartGroup.MapPatch("/{Id}", PatchCartRequest);
-            cartGroup.MapDelete("/{Id}", DeleteCart);
-            return endpoint;
-        }
+            var group = app.MapGroup("/cart");
 
-        public static Ok<IEnumerable<CartDto>> GetCart(CartServices CartService)
-        {
-            IEnumerable<CartDto> Cart = CartService.GetCartlist();
-            return TypedResults.Ok(Cart);
+            group.MapGet("/{userId}", GetCart);
+            group.MapPost("", AddToCart);
+            group.MapPatch("/{id}", UpdateCart);
+            group.MapDelete("/{id}", RemoveCart);
+            
+
+            return app;
         }
-        public static Ok<IEnumerable<CartDto>> GetCartByUserID(int userId, CartServices CartService)
+        public static IResult GetCart(int userId, CartServices service)
         {
-            IEnumerable<CartDto> Cart = CartService.GetCartByUserID(userId);
-            return TypedResults.Ok(Cart);
+            var cart = service.GetCartByUserID(userId);
+            return Results.Ok(cart);
         }
-        public static IResult CreateCartRequest(CreateCartRequest request, CartServices CartService)
+        public static IResult AddToCart(AddToCartRequest request, CartServices service)
         {
-            var result = CartService.CreateCartRequest(request);
-            return result is not null
-                ? TypedResults.Ok(result)
-                : TypedResults.BadRequest("Failed to create cart");
+            var result = service.AddToCart(request);
+            return Results.Ok(result);
         }
-        public static IResult PatchCartRequest(CartServices CartService,int Id, PatchCartRequest request)
+        public static IResult UpdateCart(int id, PatchCartRequest request, CartServices service)
         {
-            var result = CartService.PatchCartRequest(Id, request);
-            return result is not null
-                ? TypedResults.Ok(result)
-                : TypedResults.BadRequest("Failed to update cart");
+            var result = service.PatchCartRequest(id, request);
+
+            return result != null
+                ? Results.Ok(result)
+                : Results.BadRequest("Update failed");
         }
-       public static IResult DeleteCart(int Id, CartServices CartService)
+        public static IResult RemoveCart(int id, CartServices service)
         {
-            try
-            {
-                CartService.DeleteCart(Id);
-                return TypedResults.Ok($"Cart with Id {Id} deleted successfully.");
-            }
-            catch (InvalidOperationException ex)
-            {
-                return TypedResults.NotFound(ex.Message);
-            }
+            var success = service.DeleteCart(id);
+
+            return success
+                ? Results.Ok("Removed")
+                : Results.NotFound("Item not found");
         }
+        
     }
 }

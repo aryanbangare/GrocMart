@@ -13,7 +13,7 @@ namespace GrocMart.web.Endpoints
             var ordersGroup = endpoint.MapGroup("Orders");
             ordersGroup.MapGet("", GetOrders);
             ordersGroup.MapGet("/{userId}", GetOrdersByUserID);
-            ordersGroup.MapPost("checkout", Checkout);
+            
             return endpoint;
         }
 
@@ -27,19 +27,7 @@ namespace GrocMart.web.Endpoints
             IEnumerable<OrdersDto> Orders = OrdersService.GetOrdersByUserID(userId);
             return TypedResults.Ok(Orders);
         }
-        public static IResult Checkout(CreateCheckoutRequest request, OrdersServices OrdersService)
-        {
-            try
-            {
-                var result = OrdersService.CheckoutAsync(request).GetAwaiter().GetResult();
-                return result > 0
-                    ? TypedResults.Ok($"Order with Id {result} created successfully.")
-                    : TypedResults.BadRequest("Failed to create order");
-            }
-            catch (Exception ex)
-            {
-                return TypedResults.BadRequest(ex.Message);
-            }
-        }
+
+        
     }
 }
