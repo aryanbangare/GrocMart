@@ -13,7 +13,5 @@ namespace GrocMart.Persistence.Data
         public Orders? orders { get; set; }
         public Products? products { get; set; }
 
-
-
     }
 }

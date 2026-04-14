@@ -1,7 +1,9 @@
 ﻿using GrocMart.Core.Dtos;
 using GrocMart.Core.Requests;
 using GrocMart.Services.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Security.Claims;
 
 namespace GrocMart.web.Endpoints
 {
@@ -44,13 +46,35 @@ namespace GrocMart.web.Endpoints
                 ? TypedResults.Ok(result)
                 : TypedResults.BadRequest("Failed to register user");
         }
-        private static IResult Login(LoginRequest request, UsersServices UsersService)
+        private static async Task<IResult> Login(
+            HttpContext context, LoginRequest request, UsersServices UsersService)
         {
             var result = UsersService.Login(request);
-            return result is not null
-                ? TypedResults.Ok(result)
-                : TypedResults.BadRequest("Failed to login user");
+
+            if (result is not null)
+            {
+
+                var claims = new List<Claim>
+                {
+                     new Claim(ClaimTypes.Name, result.Name),
+                     new Claim(ClaimTypes.NameIdentifier, result.Id.ToString())
+                };
+
+
+                var identity = new ClaimsIdentity(claims, "Cookies");
+                var principal = new ClaimsPrincipal(identity);
+                await context.SignInAsync("Cookies", principal, new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                });
+                return result is not null
+                    ? TypedResults.Ok(result)
+                    : TypedResults.BadRequest("Failed to login user");
+            }
+            return null;
         }
+
         public static IResult DeleteUsers(int Id, UsersServices UsersService)
         {
             try

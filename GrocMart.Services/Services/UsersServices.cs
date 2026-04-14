@@ -7,20 +7,20 @@ using System.Text;
 using System.Linq;
 using GrocMart.Persistence.Data;
 
-namespace GrocMart.Services.Services
-{
-    public sealed class UsersServices
-    {
+namespace GrocMart.Services.Services                     
+{ 
+    public sealed class UsersServices                                              
+    {                                             
         private readonly AppDbContext _Dbcontext;
-        public UsersServices(AppDbContext Dbcontext)
+        public UsersServices(AppDbContext Dbcontext)                   
         {
             _Dbcontext = Dbcontext ?? throw new ArgumentNullException(nameof(Dbcontext));
-        }
+        }                                                           
         public IEnumerable<UsersDto> GetUserslist()
         {
-            IReadOnlyList<UsersDto> users = _Dbcontext.Users.Select(u => new UsersDto(u.Id, u.Name, u.PasswordHash)).ToList();
+            IReadOnlyList<UsersDto> users = _Dbcontext.Users.Select(u => new UsersDto(u.Id, u.Name)).ToList();
             return users;
-
+                                                                                                                                                                                                                                                                                                                                                                                           
         }
         public UsersDto? CreateUsersRequest(CreateUsersRequest request)
         {
@@ -33,7 +33,7 @@ namespace GrocMart.Services.Services
                 };
                 _Dbcontext.Users.Add(user);
                 _Dbcontext.SaveChanges();
-                return new UsersDto(user.Id, user.Name, user.PasswordHash);
+                return new UsersDto(user.Id, user.Name);
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace GrocMart.Services.Services
                 };
                 _Dbcontext.Users.Add(user);
                 _Dbcontext.SaveChanges();
-                return new UsersDto(user.Id, user.Name, user.PasswordHash);
+                return new UsersDto(user.Id, user.Name);
             }
             catch (Exception ex)
             {
@@ -73,19 +73,20 @@ namespace GrocMart.Services.Services
         {
             try
             {
-                var user = _Dbcontext.Users.FirstOrDefault(u => u.Name == request.Name && u.PasswordHash == request.PasswordHash);
+                var user = _Dbcontext.Users
+                    .FirstOrDefault(u => u.Name == request.Name 
+                      && u.PasswordHash == request.PasswordHash);
 
                 if (user != null)
-                {
-                    return new UsersDto(user.Id, user.Name, user.PasswordHash);
+                {                                                                               
+                    return new UsersDto(user.Id, user.Name);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while logging in: {ex.Message}");
+                Console.WriteLine($"An error occurred while logging in:{ex.Message}");
             }
-            
-
+         
             return null;
         }
         public void DeleteUsers(int id)
