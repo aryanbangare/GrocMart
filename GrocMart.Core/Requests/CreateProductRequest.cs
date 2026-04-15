@@ -10,7 +10,7 @@ namespace GrocMart.Core.Requests
         public  string Brand { get; set; }
         public  decimal Price { get; set; }
         public  decimal DiscountPrice { get; set; }
-        public  int AvabilityQuentity { get; set; } 
+        public  int AvailabilityQuantity { get; set; } 
 
     }
 }

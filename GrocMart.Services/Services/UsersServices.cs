@@ -29,7 +29,7 @@ namespace GrocMart.Services.Services
                 var user = new Persistence.Data.Users
                 {
                     Name = request.Name,
-                    PasswordHash = request.PasswordHash
+                    Password = request.Password
                 };
                 _Dbcontext.Users.Add(user);
                 _Dbcontext.SaveChanges();
@@ -56,7 +56,7 @@ namespace GrocMart.Services.Services
                 var user = new Persistence.Data.Users
                 {
                     Name = request.Name,
-                    PasswordHash = request.PasswordHash
+                    Password = request.Password
                 };
                 _Dbcontext.Users.Add(user);
                 _Dbcontext.SaveChanges();
@@ -75,7 +75,7 @@ namespace GrocMart.Services.Services
             {
                 var user = _Dbcontext.Users
                     .FirstOrDefault(u => u.Name == request.Name 
-                      && u.PasswordHash == request.PasswordHash);
+                      && u.Password == request.Password);
 
                 if (user != null)
                 {                                                                               

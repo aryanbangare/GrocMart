@@ -8,7 +8,7 @@ namespace GrocMart.Persistence.Data
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public required string PasswordHash { get; set; }
+        public required string Password { get; set; }
 
     }
 }

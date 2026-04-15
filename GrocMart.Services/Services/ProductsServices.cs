@@ -18,12 +18,12 @@ namespace GrocMart.Services.Services
         }
         public IEnumerable<ProductsDto> GetProductslist()
         {
-            IReadOnlyList<ProductsDto> products = _Dbcontext.Products.Where(p => p.AvabilityQuentity > 0).Select(p => new ProductsDto(p.Id, p.Name, p.Brand, p.Price, p.DiscountPrice, p.AvabilityQuentity)).ToList();
+            IReadOnlyList<ProductsDto> products = _Dbcontext.Products.Where(p => p.AvailabilityQuantity > 0).Select(p => new ProductsDto(p.Id, p.Name, p.Brand, p.Price, p.DiscountPrice, p.AvailabilityQuantity)).ToList();
             return products;
         }
         public IEnumerable<ProductsDto> GetProductsById(int Id)
         {
-            IReadOnlyList<ProductsDto> products = _Dbcontext.Products.Where(p => p.Id == Id).Select(p => new ProductsDto(p.Id, p.Name, p.Brand, p.Price, p.DiscountPrice, p.AvabilityQuentity)).ToList();
+            IReadOnlyList<ProductsDto> products = _Dbcontext.Products.Where(p => p.Id == Id).Select(p => new ProductsDto(p.Id, p.Name, p.Brand, p.Price, p.DiscountPrice, p.AvailabilityQuantity)).ToList();
             return products;
         }
         public ProductsDto? CreateProductRequest(CreateProductRequest request)
@@ -36,11 +36,11 @@ namespace GrocMart.Services.Services
                     Brand = request.Brand,
                     Price = request.Price,
                     DiscountPrice = request.DiscountPrice,
-                    AvabilityQuentity = request.AvabilityQuentity
+                    AvailabilityQuantity = request.AvailabilityQuantity
                 };
                 _Dbcontext.Products.Add(product);
                 _Dbcontext.SaveChanges();
-                return new ProductsDto(product.Id, product.Name, product.Brand, product.Price, product.DiscountPrice, product.AvabilityQuentity);
+                return new ProductsDto(product.Id, product.Name, product.Brand, product.Price, product.DiscountPrice, product.AvailabilityQuantity);
             }
             catch (Exception ex)
             {
@@ -74,9 +74,9 @@ namespace GrocMart.Services.Services
                 
                 product.Price = request.Price  ;
                 product.DiscountPrice = request.DiscountPrice ;
-                product.AvabilityQuentity = request.AvabilityQuentity ;
+                product.AvailabilityQuantity = request.AvailabilityQuantity;
                 _Dbcontext.SaveChanges();
-                return new ProductsDto(product.Id, product.Name, product.Brand, product.Price, product.DiscountPrice, product.AvabilityQuentity);
+                return new ProductsDto(product.Id, product.Name, product.Brand, product.Price, product.DiscountPrice, product.AvailabilityQuantity);
             }
             catch (Exception ex)
             {

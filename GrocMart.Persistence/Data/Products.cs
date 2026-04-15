@@ -11,7 +11,7 @@ namespace GrocMart.Persistence.Data
         public required string Brand { get; set; }
         public decimal Price { get; set; }
         public decimal DiscountPrice { get; set; }
-        public int AvabilityQuentity { get; set; }
+        public int AvailabilityQuantity { get; set; }
         public IList<Cart> Carts { get; init; } = [];
         public IList<OrderItems> OrderItems { get; init; } = []; 
 

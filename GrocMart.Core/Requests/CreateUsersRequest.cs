@@ -7,7 +7,7 @@ namespace GrocMart.Core.Requests
     public  class CreateUsersRequest
     {
         public string Name { get; set; }
-        public string PasswordHash { get; set; }
+        public string Password { get; set; }
 
     }
 }

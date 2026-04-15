@@ -48,11 +48,11 @@ namespace GrocMart.Services.Services
                 if (product == null)
                     throw new Exception($"Product {item.ProductId} not found");
 
-                if (product.AvabilityQuentity < item.Quantity)
+                if (product.AvailabilityQuantity < item.Quantity)
                     throw new Exception($"Insufficient stock for product {product.Name}");
 
             
-                product.AvabilityQuentity -= item.Quantity;
+                product.AvailabilityQuantity -= item.Quantity;
 
             
                 _Dbcontext.OrderItems.Add(new OrderItems

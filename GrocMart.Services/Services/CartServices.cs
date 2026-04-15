@@ -39,7 +39,7 @@ namespace GrocMart.Services.Services
             if (product == null)
                 return new { success = false, message = "Invalid product id" };
 
-            if (product.AvabilityQuentity < request.Quantity)
+            if (product.AvailabilityQuantity < request.Quantity)
                 return new { success = false, message = "Not enough stock" };
 
             var existing = _dbcontext.Cart
